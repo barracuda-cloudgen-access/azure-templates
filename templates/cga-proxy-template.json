@@ -254,6 +254,9 @@
             "name": "[variables('virtualMachineScaleSetName')]",
             "location": "[parameters('templateLocation')]",
             "tags": "[variables('finalTags')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
             "sku": {
                 "name": "[parameters('virtualMachineScaleSetInstanceSize')]",
                 "tier": "Standard",
@@ -412,6 +415,9 @@
             "type": "Microsoft.Storage/storageAccounts/managementPolicies",
             "name": "[concat(variables('storageAccountName'), '/default')]",
             "apiVersion": "2019-06-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
             "properties": {
                 "policy": {
                     "rules": [
