@@ -1,0 +1,449 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "accessProxyToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Registration token for the Access Proxy (empty value will prevent overwrite of existing resource)."
+            }
+        },
+        "accessProxyLbPort": {
+            "defaultValue": 443,
+            "type": "int",
+            "minValue": 1,
+            "maxValue": 65535,
+            "metadata": {
+                "description": "Public port for the Access Proxy load balancer (defaults to '443')."
+            }
+        },
+        "accessProxyLbTimeout": {
+            "defaultValue": 15,
+            "type": "int",
+            "minValue": 1,
+            "maxValue": 3600,
+            "metadata": {
+                "description": "Timeout in minutes for the Access Proxy load balancer connections (defaults to '15')."
+            }
+        },
+        "virtualMachineScaleSetInstanceSize": {
+            "defaultValue": "Standard_B1s",
+            "type": "string",
+            "allowedValues": [
+                "Standard_B1s",
+                "Standard_B1ms",
+                "Standard_B2s"
+            ],
+            "metadata": {
+                "description": "Instance size for the Access Proxy (defaults to 'Standard_B1s')."
+            }
+        },
+        "virtualMachineScaleSetVnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the VNET to use for the Access Proxy Instances."
+            }
+        },
+        "virtualMachineScaleSetSubnetName": {
+            "type": "string",
+            "defaultValue": "default",
+            "metadata": {
+                "description": "Name of the Subnet to use for the Access Proxy Instances (defaults to 'default')."
+            }
+        },
+        "virtualMachineScaleSetAuthPublicKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Public Key to use for the Access Proxy Instances login (defaults to a placeholder when the value is not provided)."
+            }
+        },
+        "templateLocation": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "string",
+            "metadata": {
+                "description": "Location to deploy resources (defaults to Resource Group location)."
+            }
+        },
+        "templateCustomTags": {
+            "type": "object",
+            "defaultValue": {},
+            "metadata": {
+                "description": "Specify custom tags to be merged with defaults."
+            }
+        }
+    },
+    "variables": {
+        "defaultTags": {
+            "Service": "CloudGen Access",
+            "Provider": "Barracuda",
+            "KeyVault": "[variables('keyVaultName')]"
+        },
+        "customData": "IyEvYmluL2Jhc2gKCnNldCAtZXVvIHBpcGVmYWlsCgplY2hvICJSYXRlTGltaXRCdXJzdD0xMDAwMCIgPj4gL2V0Yy9zeXN0ZW1kL2pvdXJuYWxkLmNvbmYKc3lzdGVtY3RsIHJlc3RhcnQgc3lzdGVtZC1qb3VybmFsZC5zZXJ2aWNlCgp5dW0gLXkgaW5zdGFsbCBjdXJsIGpxCgpBWlVSRV9UT0tFTj0iJChjdXJsIC1IIE1ldGFkYXRhOnRydWUgXAogICAgImh0dHA6Ly8xNjkuMjU0LjE2OS4yNTQvbWV0YWRhdGEvaWRlbnRpdHkvb2F1dGgyL3Rva2VuP2FwaS12ZXJzaW9uPTIwMTgtMDItMDEmcmVzb3VyY2U9aHR0cHMlM0ElMkYlMkZ2YXVsdC5henVyZS5uZXQiIHwgXAogICAganEgLXIgLmFjY2Vzc190b2tlbikiCgpJRlM9IjsiIHJlYWQgLXIgLWEgVEFHUyA8PDwgIiQoY3VybCAtSCBNZXRhZGF0YTp0cnVlIFwKICAgICJodHRwOi8vMTY5LjI1NC4xNjkuMjU0L21ldGFkYXRhL2luc3RhbmNlL2NvbXB1dGU/YXBpLXZlcnNpb249MjAxOC0xMC0wMSIgfCBcCiAgICBqcSAtciAudGFncykiCgpmb3IgVEFHIGluICIke1RBR1NbQF19IjsgZG8KICAgIGlmIFtbICIke1RBR30iID1+IF5LZXlWYXVsdCBdXTsgdGhlbgogICAgICAgIEtFWV9WQVVMVF9OQU1FPSIke1RBRyMqOn0iCiAgICBmaQpkb25lCgpDR0FfVE9LRU49IiQoY3VybCAtSCAiQXV0aG9yaXphdGlvbjogQmVhcmVyICR7QVpVUkVfVE9LRU59IiBcCiAgICAiaHR0cHM6Ly8ke0tFWV9WQVVMVF9OQU1FfS52YXVsdC5henVyZS5uZXQvc2VjcmV0cy9jZ2EtcHJveHktdG9rZW4/YXBpLXZlcnNpb249MjAxNi0xMC0wMSIgfCBcCiAgICBqcSAtciAudmFsdWUpIgoKY3VybCAtc0wgImh0dHBzOi8vdXJsLmZ5ZGUubWUvaW5zdGFsbC1meWRlLXByb3h5LWxpbnV4IiB8IGJhc2ggLXMgLS0gLXUgLXAgIjQ0MyIgLXogXAogICAgLXQgIiR7Q0dBX1RPS0VOfSIK",
+        "finalTags": "[union(parameters('templateCustomTags'),variables('defaultTags'))]",
+        "keyVaultName": "[substring(concat(variables('namePrefix'), 'vault', variables('nameSuffix')), 0, 24)]",
+        "loadBalancerBackendName": "[concat(variables('namePrefix'), 'lb-backend', variables('nameSuffix'))]",
+        "loadBalancerFrontendName": "[concat(variables('namePrefix'), 'lb-frontend', variables('nameSuffix'))]",
+        "loadBalancerHealthProbeName": "[concat(variables('namePrefix'), 'lb-health-probe', variables('nameSuffix'))]",
+        "loadBalancerName": "[concat(variables('namePrefix'), 'lb', variables('nameSuffix'))]",
+        "loadBalancerRuleName": "[concat(variables('namePrefix'), 'lb-rule', variables('nameSuffix'))]",
+        "namePrefix": "cga-proxy-",
+        "nameSuffix": "[concat('-', uniqueString(resourceGroup().id))]",
+        "networkSecurityGroupName": "[concat(variables('namePrefix'), 'nsg', variables('nameSuffix'))]",
+        "placeholderPublicKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCzjQ+NvXCkEcxJaZDGBB0mFXyzM2NDBf4I1XMGB5gUeqGn6AuQcAAxL0F6BZLFY1gWLmFx7d7mEeOvykZTrX/prTbjHwd78CqUzzdLSdCBFpKYGBdaDlqi7QaVddzlB8rrCwPkOsWPC+e7izpaIObl+URjYQd/dhD3D77dgIz0LnGZDVPSKUnmS3rQA3STnQCoMqJ1Mv7ctcZEFwgQYzrX/vHcLz1+QgIotkQtarOi2HGNLExJGzYCtKBPaTJYrxTQwuv+qa9THnafzlHqmwvskU+QUJ6rqcpXfZs5Biw7pBS+vY7ZwzO7EayLC+gPULcO00ZNTJPTZ6vJ2NGH7OIr this-is-a-placeholder",
+        "publicIPAddressName": "[concat(variables('namePrefix'), 'ip', variables('nameSuffix'))]",
+        "storageAccountName": "[substring(replace(concat(variables('namePrefix'), 'logs', variables('nameSuffix')), '-', ''), 0, 24)]",
+        "virtualMachineScaleSetInstanceCount": 1,
+        "virtualMachineScaleSetInstanceName": "[concat(variables('namePrefix'), 'vmss', variables('nameSuffix'), '-')]",
+        "virtualMachineScaleSetName": "[concat(variables('namePrefix'), 'vmss', variables('nameSuffix'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "name": "[variables('keyVaultName')]",
+            "location": "[parameters('templateLocation')]",
+            "tags": "[variables('finalTags')]",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[reference(variables('virtualMachineScaleSetName')).uniqueId]",
+                        "permissions": {
+                            "secrets": [
+                                "Get",
+                                "List"
+                            ]
+                        }
+                    }
+                ],
+                "tenantId": "[subscription().tenantId]",
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false,
+                "enableSoftDelete": true
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "condition": "[not(empty(parameters('accessProxyToken')))]",
+            "apiVersion": "2016-10-01",
+            "name": "[concat(variables('keyVaultName'), '/cga-proxy-token')]",
+            "location": "[parameters('templateLocation')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+            ],
+            "properties": {
+                "value": "[parameters('accessProxyToken')]",
+                "contentType": "string",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/accessPolicies",
+            "name": "[concat(variables('KeyVaultName'), '/add')]",
+            "apiVersion": "2016-10-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+                "[resourceId('Microsoft.Compute/virtualMachineScaleSets', variables('virtualMachineScaleSetName'))]"
+            ],
+            "properties": {
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[reference(concat('Microsoft.Compute/virtualMachineScaleSets/', variables('virtualMachineScaleSetName'), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]",
+                        "permissions": {
+                            "secrets": [
+                                "Get",
+                                "List"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/loadBalancers",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('loadBalancerName')]",
+            "location": "[parameters('templateLocation')]",
+            "tags": "[variables('finalTags')]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "[variables('loadBalancerFrontendName')]",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
+                            },
+                            "privateIPAddressVersion": "[reference(variables('publicIPAddressName')).publicIPAddressVersion]"
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "[variables('loadBalancerBackendName')]"
+                    }
+                ],
+                "loadBalancingRules": [
+                    {
+                        "name": "[variables('loadBalancerRuleName')]",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', variables('loadBalancerName'), variables('loadBalancerFrontendName'))]"
+                            },
+                            "frontendPort": "[parameters('accessProxyLbPort')]",
+                            "backendPort": "[parameters('accessProxyLbPort')]",
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": "[reference(variables('publicIPAddressName')).idleTimeoutInMinutes]",
+                            "protocol": "Tcp",
+                            "enableTcpReset": false,
+                            "loadDistribution": "Default",
+                            "disableOutboundSnat": false,
+                            "backendAddressPool": {
+                                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('loadBalancerName'), variables('loadBalancerBackendName'))]"
+                            },
+                            "probe": {
+                                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', variables('loadBalancerName'), variables('loadBalancerHealthProbeName'))]"
+                            }
+                        }
+                    }
+                ],
+                "probes": [
+                    {
+                        "name": "[variables('loadBalancerHealthProbeName')]",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": "[parameters('accessProxyLbPort')]",
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 5
+                        }
+                    }
+                ],
+                "outboundRules": [],
+                "inboundNatPools": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('publicIPAddressName')]",
+            "location": "[parameters('templateLocation')]",
+            "tags": "[variables('finalTags')]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": "[parameters('accessProxyLbTimeout')]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachineScaleSets",
+            "apiVersion": "2019-07-01",
+            "name": "[variables('virtualMachineScaleSetName')]",
+            "location": "[parameters('templateLocation')]",
+            "tags": "[variables('finalTags')]",
+            "sku": {
+                "name": "[parameters('virtualMachineScaleSetInstanceSize')]",
+                "tier": "Standard",
+                "capacity": "[variables('virtualMachineScaleSetInstanceCount')]"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "singlePlacementGroup": true,
+                "upgradePolicy": {
+                    "mode": "Automatic"
+                },
+                "scaleInPolicy": {
+                    "rules": [
+                        "OldestVM"
+                    ]
+                },
+                "virtualMachineProfile": {
+                    "osProfile": {
+                        "computerNamePrefix": "[variables('virtualMachineScaleSetInstanceName')]",
+                        "customData": "[variables('customData')]",
+                        "adminUsername": "azureuser",
+                        "linuxConfiguration": {
+                            "disablePasswordAuthentication": true,
+                            "provisionVMAgent": true,
+                            "ssh": {
+                                "publicKeys": [
+                                    {
+                                        "path": "/home/azureuser/.ssh/authorized_keys",
+                                        "keyData": "[if(empty(parameters('virtualMachineScaleSetAuthPublicKey')), variables('placeholderPublicKey'), parameters('virtualMachineScaleSetAuthPublicKey'))]"
+                                    }
+                                ]
+                            }
+                        },
+                        "secrets": []
+                    },
+                    "storageProfile": {
+                        "osDisk": {
+                            "createOption": "FromImage",
+                            "caching": "ReadWrite",
+                            "managedDisk": {
+                                "storageAccountType": "StandardSSD_LRS"
+                            },
+                            "diskSizeGB": 30
+                        },
+                        "imageReference": {
+                            "publisher": "OpenLogic",
+                            "offer": "CentOS",
+                            "sku": "8_2",
+                            "version": "latest"
+                        }
+                    },
+                    "networkProfile": {
+                        "healthProbe": {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/probes', variables('loadBalancerName'), variables('loadBalancerHealthProbeName'))]"
+                        },
+                        "networkInterfaceConfigurations": [
+                            {
+                                "name": "[concat(variables('virtualMachineScaleSetName'), '-vnet-nic01')]",
+                                "properties": {
+                                    "primary": true,
+                                    "enableAcceleratedNetworking": false,
+                                    "networkSecurityGroup": {
+                                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+                                    },
+                                    "ipConfigurations": [
+                                        {
+                                            "name": "[concat(variables('virtualMachineScaleSetName'), '-vnet-nic01-defaultIpConfiguration')]",
+                                            "properties": {
+                                                "primary": true,
+                                                "subnet": {
+                                                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualMachineScaleSetVnetName'), parameters('virtualMachineScaleSetSubnetName'))]"
+                                                },
+                                                "privateIPAddressVersion": "IPv4",
+                                                "loadBalancerBackendAddressPools": [
+                                                    {
+                                                        "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('loadBalancerName'), variables('loadBalancerBackendName'))]"
+                                                    }
+                                                ],
+                                                "loadBalancerInboundNatPools": []
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "diagnosticsProfile": {
+                        "bootDiagnostics": {
+                            "enabled": true,
+                            "storageUri": "[reference(variables('storageAccountName')).primaryEndpoints.blob]"
+                        }
+                    },
+                    "extensionProfile": {
+                        "extensions": []
+                    },
+                    "priority": "Regular"
+                },
+                "overprovision": true,
+                "doNotRunExtensionsOnOverprovisionedVMs": false,
+                "platformFaultDomainCount": 5,
+                "automaticRepairsPolicy": {
+                    "enabled": true,
+                    "gracePeriod": "PT30M"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('networkSecurityGroupName')]",
+            "location": "[parameters('templateLocation')]",
+            "tags": "[variables('finalTags')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "[concat('port-', parameters('accessProxyLbPort'))]",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "[parameters('accessProxyLbPort')]",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "apiVersion": "2019-06-01",
+            "location": "[parameters('templateLocation')]",
+            "tags": "[variables('finalTags')]",
+            "properties": {
+                "accessTier": "Hot",
+                "minimumTlsVersion": "TLS1_2",
+                "supportsHttpsTrafficOnly": true,
+                "allowBlobPublicAccess": false,
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "defaultAction": "Allow",
+                    "ipRules": []
+                }
+            },
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2"
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/managementPolicies",
+            "name": "[concat(variables('storageAccountName'), '/default')]",
+            "apiVersion": "2019-06-01",
+            "properties": {
+                "policy": {
+                    "rules": [
+                        {
+                            "enabled": true,
+                            "name": "DeleteOlderThan7Days",
+                            "type": "Lifecycle",
+                            "definition": {
+                                "actions": {
+                                    "baseBlob": {
+                                        "delete": {
+                                            "daysAfterModificationGreaterThan": 7
+                                        }
+                                    }
+                                },
+                                "filters": {
+                                    "blobTypes": [
+                                        "blockBlob"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "ipAddress": {
+            "type": "string",
+            "value": "[reference(variables('publicIPAddressName')).ipAddress]"
+        }
+    }
+}
