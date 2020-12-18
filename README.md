@@ -9,10 +9,10 @@ Azure Resource Manager (ARM) templates for CloudGen resources
 ```sh
 az deployment group create \
     --name cga-proxy \
-    --resource-group cga-access-proxy-dev \
-    --template-file ./templates/cga-access-proxy-template.json \
-    -p virtualMachineScaleSetAuthPublicKey="$(cat ~/.ssh/azure-cga-proxy-key.pub)" \
-    -p virtualMachineScaleSetVnetName=cga-access-proxy-dev-vnet
+    --resource-group cga-proxy \
+    --template-file ./templates/cga-proxy-template.json \
+    -p virtualMachineScaleSetAuthPublicKey="$(cat ~/.ssh/cga-proxy-key.pub)" \
+    -p virtualMachineScaleSetVnetName=cga-proxy-vnet
 ```
 
 ### Update custom data
@@ -20,7 +20,7 @@ az deployment group create \
 1. Generate base64
 
     ```sh
-    ./helpers/create-custom-data-base64.sh ./helpers/cga-access-proxy-custom-data.sh
+    ./helpers/create-custom-data-base64.sh ./helpers/cga-proxy-custom-data.sh
     ```
 
 1. Update variable `customData` value and commit result
