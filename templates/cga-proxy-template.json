@@ -146,8 +146,8 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/accessPolicies",
-            "name": "[concat(variables('KeyVaultName'), '/add')]",
             "apiVersion": "2016-10-01",
+            "name": "[concat(variables('KeyVaultName'), '/add')]",
             "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
                 "[resourceId('Microsoft.Compute/virtualMachineScaleSets', variables('virtualMachineScaleSetName'))]"
@@ -391,8 +391,8 @@
         },
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "name": "[variables('storageAccountName')]",
             "apiVersion": "2019-06-01",
+            "name": "[variables('storageAccountName')]",
             "location": "[parameters('templateLocation')]",
             "tags": "[variables('finalTags')]",
             "properties": {
@@ -413,8 +413,8 @@
         },
         {
             "type": "Microsoft.Storage/storageAccounts/managementPolicies",
-            "name": "[concat(variables('storageAccountName'), '/default')]",
             "apiVersion": "2019-06-01",
+            "name": "[concat(variables('storageAccountName'), '/default')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ],
