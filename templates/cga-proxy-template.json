@@ -5,7 +5,7 @@
         "accessProxyToken": {
             "type": "securestring",
             "metadata": {
-                "description": "Registration token for the Access Proxy (empty value will prevent overwrite of existing resource)."
+                "description": "Registration token for the Access Proxy."
             }
         },
         "accessProxyLbPort": {
@@ -130,7 +130,6 @@
         },
         {
             "type": "Microsoft.KeyVault/vaults/secrets",
-            "condition": "[not(empty(parameters('accessProxyToken')))]",
             "apiVersion": "2016-10-01",
             "name": "[concat(variables('keyVaultName'), '/cga-proxy-token')]",
             "location": "[parameters('templateLocation')]",
