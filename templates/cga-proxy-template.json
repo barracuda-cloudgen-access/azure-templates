@@ -157,7 +157,7 @@
                 "accessPolicies": [
                     {
                         "tenantId": "[subscription().tenantId]",
-                        "objectId": "[reference(concat('Microsoft.Compute/virtualMachineScaleSets/', variables('virtualMachineScaleSetName'), '/providers/Microsoft.ManagedIdentity/Identities/default'), '2018-11-30').principalId]",
+                        "objectId": "[reference(resourceId('Microsoft.Compute/virtualMachineScaleSets', variables('virtualMachineScaleSetName')), '2019-07-01', 'full').identity.principalId]",
                         "permissions": {
                             "secrets": [
                                 "Get",
