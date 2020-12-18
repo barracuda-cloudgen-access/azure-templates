@@ -12,7 +12,8 @@ az deployment group create \
     --resource-group cga-proxy \
     --template-file ./templates/cga-proxy-template.json \
     -p virtualMachineScaleSetAuthPublicKey="$(cat ~/.ssh/cga-proxy-key.pub)" \
-    -p virtualMachineScaleSetVnetName=cga-proxy-vnet
+    -p virtualMachineScaleSetVnetName=cga-proxy-vnet \
+    -p templateCustomTags='{"Owner":"Contoso","Cost Center":"2345-324"}'
 ```
 
 ### Update custom data

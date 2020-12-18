@@ -69,7 +69,7 @@
             "type": "object",
             "defaultValue": {},
             "metadata": {
-                "description": "Specify custom tags to be merged with defaults."
+                "description": "Specify custom tags to be merged with defaults (example: {\"Owner\":\"Contoso\",\"Cost Center\":\"2345-324\"})."
             }
         }
     },
