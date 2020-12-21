@@ -235,9 +235,7 @@
                             "numberOfProbes": 5
                         }
                     }
-                ],
-                "outboundRules": [],
-                "inboundNatPools": []
+                ]
             }
         },
         {
@@ -298,8 +296,7 @@
                                     }
                                 ]
                             }
-                        },
-                        "secrets": []
+                        }
                     },
                     "storageProfile": {
                         "osDisk": {
@@ -343,8 +340,7 @@
                                                     {
                                                         "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('loadBalancerName'), variables('loadBalancerBackendName'))]"
                                                     }
-                                                ],
-                                                "loadBalancerInboundNatPools": []
+                                                ]
                                             }
                                         }
                                     ]
@@ -357,9 +353,6 @@
                             "enabled": true,
                             "storageUri": "[reference(variables('storageAccountName')).primaryEndpoints.blob]"
                         }
-                    },
-                    "extensionProfile": {
-                        "extensions": []
                     },
                     "priority": "Regular"
                 },
@@ -409,8 +402,7 @@
                 "allowBlobPublicAccess": false,
                 "networkAcls": {
                     "bypass": "AzureServices",
-                    "defaultAction": "Allow",
-                    "ipRules": []
+                    "defaultAction": "Allow"
                 }
             },
             "sku": {
