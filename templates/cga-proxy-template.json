@@ -51,6 +51,13 @@
                 "description": "Name of the Subnet to use for the Access Proxy Instances (defaults to 'default')."
             }
         },
+        "virtualMachineScaleSetAuthUserName": {
+            "type": "string",
+            "defaultValue": "azureuser",
+            "metadata": {
+                "description": "Admin username to use for the Access Proxy Instances login (defaults to azureuser)."
+            }
+        },
         "virtualMachineScaleSetAuthPublicKey": {
             "type": "string",
             "defaultValue": "",
@@ -279,14 +286,14 @@
                     "osProfile": {
                         "computerNamePrefix": "[variables('virtualMachineScaleSetInstanceName')]",
                         "customData": "[variables('customData')]",
-                        "adminUsername": "azureuser",
+                        "adminUsername": "[parameters('virtualMachineScaleSetAuthUserName')]",
                         "linuxConfiguration": {
                             "disablePasswordAuthentication": true,
                             "provisionVMAgent": true,
                             "ssh": {
                                 "publicKeys": [
                                     {
-                                        "path": "/home/azureuser/.ssh/authorized_keys",
+                                        "path": "[concat('/home/', parameters('virtualMachineScaleSetAuthUserName'), '/.ssh/authorized_keys')]",
                                         "keyData": "[if(empty(parameters('virtualMachineScaleSetAuthPublicKey')), variables('placeholderPublicKey'), parameters('virtualMachineScaleSetAuthPublicKey'))]"
                                     }
                                 ]
