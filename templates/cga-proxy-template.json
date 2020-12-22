@@ -209,7 +209,7 @@
                                 "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', variables('loadBalancerName'), variables('loadBalancerFrontendName'))]"
                             },
                             "frontendPort": "[parameters('accessProxyLbPort')]",
-                            "backendPort": "[parameters('accessProxyLbPort')]",
+                            "backendPort": 443,
                             "enableFloatingIP": false,
                             "idleTimeoutInMinutes": "[reference(variables('publicIPAddressName')).idleTimeoutInMinutes]",
                             "protocol": "Tcp",
@@ -230,7 +230,7 @@
                         "name": "[variables('loadBalancerHealthProbeName')]",
                         "properties": {
                             "protocol": "Tcp",
-                            "port": "[parameters('accessProxyLbPort')]",
+                            "port": 443,
                             "intervalInSeconds": 5,
                             "numberOfProbes": 5
                         }
@@ -374,11 +374,11 @@
             "properties": {
                 "securityRules": [
                     {
-                        "name": "[concat('port-', parameters('accessProxyLbPort'))]",
+                        "name": "port-443",
                         "properties": {
                             "protocol": "TCP",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "[parameters('accessProxyLbPort')]",
+                            "destinationPortRange": "443",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
