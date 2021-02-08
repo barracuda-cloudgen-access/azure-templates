@@ -8,4 +8,4 @@ SHELL = /bin/bash
 ### Actions
 
 lint:
-	act -j linter
+	act -j linter --env-file <(echo "RUN_LOCAL=true")
