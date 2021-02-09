@@ -1,0 +1,232 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+    "handler": "Microsoft.Azure.CreateUIDef",
+    "version": "0.1.2-preview",
+    "parameters": {
+        "basics": [
+            {}
+        ],
+        "steps": [
+            {
+                "name": "cgaProxy",
+                "label": "CloudGen Access Proxy",
+                "bladeTitle": "Authentication",
+                "elements": [
+                    {
+                        "name": "accessProxyTokenInfo",
+                        "type": "Microsoft.Common.TextBlock",
+                        "visible": true,
+                        "options": {
+                            "text": "The Access Proxy Token is obtained by creating a new CloudGen Access Proxy.",
+                            "link": {
+                                "label": "Learn more",
+                                "uri": "https://campus.barracuda.com/product/cloudgenaccess/doc/93201527/add-cloudgen-access-proxy"
+                            }
+                        }
+                    },
+                    {
+                        "name": "accessProxyToken",
+                        "type": "Microsoft.Common.PasswordBox",
+                        "label": {
+                            "password": "Access Proxy Token",
+                            "confirmPassword": "Confirm password"
+                        },
+                        "toolTip": "Registration token for the Access Proxy.",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^http[s]?://[^/]+/proxies/v[0-9]+/enrollment/[0-9a-f-]+\\?proxy_auth_token=[^\\&]+\\&tenant_id=[0-9a-f-]+$",
+                            "validationMessage": "Access Proxy enrollment token is invalid, please try again."
+                        },
+                        "options": {
+                            "hideConfirmation": true
+                        },
+                        "visible": true
+                    }
+                ]
+            },
+            {
+                "name": "network",
+                "label": "Network",
+                "elements": [
+                    {
+                        "name": "virtualNetwork",
+                        "type": "Microsoft.Network.VirtualNetworkCombo",
+                        "label": {
+                            "virtualNetwork": "Virtual network",
+                            "subnets": "Subnets"
+                        },
+                        "toolTip": {
+                            "virtualNetwork": "Name of the virtual network",
+                            "subnets": "Subnets for the virtual network"
+                        },
+                        "defaultValue": {
+                            "name": "VirtualNetwork",
+                            "addressPrefixSize": "/16"
+                        },
+                        "constraints": {
+                            "minAddressPrefixSize": "/16"
+                        },
+                        "subnets": {
+                            "subnet1": {
+                                "label": "Subnet",
+                                "defaultValue": {
+                                    "name": "Default",
+                                    "addressPrefixSize": "/24"
+                                },
+                                "constraints": {
+                                    "minAddressPrefixSize": "/24",
+                                    "minAddressCount": 12,
+                                    "requireContiguousAddresses": false
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "loadBalancer",
+                        "type": "Microsoft.Common.Section",
+                        "label": "Configure load balancer",
+                        "elements": [
+                            {
+                                "name": "accessProxyLbPort",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "Load Balancer Public Port",
+                                "defaultValue": "443",
+                                "toolTip": "Public port for the Access Proxy load balancer.",
+                                "constraints": {
+                                    "required": false,
+                                    "regex": "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
+                                    "validationMessage": "Must be between 1 and 65535."
+                                },
+                                "visible": true
+                            },
+                            {
+                                "name": "accessProxyLbTimeout",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "Load Balancer Timeout",
+                                "defaultValue": "15",
+                                "toolTip": "Timeout in minutes for the Access Proxy load balancer connections.",
+                                "constraints": {
+                                    "required": false,
+                                    "regex": "^([1-9]|[0-6][0-9])$",
+                                    "validationMessage": "Must be between 1 and 60"
+                                },
+                                "visible": true
+                            }
+                        ],
+                        "visible": true
+                    }
+                ]
+            },
+            {
+                "name": "instances",
+                "label": "Instances",
+                "elements": [
+                    {
+                        "name": "vmSettings",
+                        "type": "Microsoft.Common.Section",
+                        "label": "Virtual Machines Settings",
+                        "elements": [
+                            {
+                                "name": "virtualMachineScaleSetInstanceSize",
+                                "type": "Microsoft.Common.DropDown",
+                                "label": "Instance Size",
+                                "defaultValue": "Standard_B1s",
+                                "toolTip": "Instance size for the Access Proxy virtual machines.",
+                                "constraints": {
+                                    "required": false,
+                                    "allowedValues": [
+                                        {
+                                            "label": "Standard_B1s",
+                                            "value": "Standard_B1s"
+                                        },
+                                        {
+                                            "label": "Standard_B1ms",
+                                            "value": "Standard_B1ms"
+                                        },
+                                        {
+                                            "label": "Standard_B2s",
+                                            "value": "Standard_B2s"
+                                        }
+                                    ]
+                                },
+                                "visible": true
+                            }
+                        ],
+                        "visible": true
+                    },
+                    {
+                        "name": "authSettings",
+                        "type": "Microsoft.Common.Section",
+                        "label": "Authentication Settings",
+                        "elements": [
+                            {
+                                "name": "virtualMachineScaleSetAuthUserName",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "User Name",
+                                "defaultValue": "azureuser",
+                                "toolTip": "Admin username to use for the Access Proxy Instances login.",
+                                "constraints": {
+                                    "required": false
+                                },
+                                "visible": true
+                            },
+                            {
+                                "name": "virtualMachineScaleSetAuthPublicKey",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "SSH Public Key",
+                                "toolTip": "Public Key to use for the Access Proxy Instances.",
+                                "constraints": {
+                                    "required": false
+                                },
+                                "visible": true
+                            },
+                            {
+                                "name": "sshInfo",
+                                "type": "Microsoft.Common.TextBlock",
+                                "visible": true,
+                                "options": {
+                                    "text": "The Public Key defaults to a placeholder when the value is not provided. If needed, a Public Key can be uploaded afterwards.",
+                                    "link": {
+                                        "label": "Upload key to existing instance",
+                                        "uri": "https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-ssh-keys-detailed#use-ssh-copy-id-to-copy-the-key-to-an-existing-vm"
+                                    }
+                                }
+                            }
+                        ],
+                        "visible": true
+                    }
+                ]
+            },
+            {
+                "name": "tags",
+                "label": "Tags",
+                "elements": [
+                    {
+                        "name": "tagsByResource",
+                        "type": "Microsoft.Common.TagsByResource",
+                        "resources": [
+                            "Microsoft.KeyVault/vaults",
+                            "Microsoft.Network/loadBalancers",
+                            "Microsoft.Network/publicIPAddresses",
+                            "Microsoft.Compute/virtualMachineScaleSets",
+                            "Microsoft.Network/networkSecurityGroups",
+                            "Microsoft.Storage/storageAccounts"
+                        ],
+                        "visible": true
+                    }
+                ]
+            }
+        ],
+        "outputs": {
+            "accessProxyToken": "[steps('cgaProxy').accessProxyToken]",
+            "virtualMachineScaleSetVnetName": "[steps('network').virtualNetwork.name]",
+            "virtualMachineScaleSetSubnetName": "[steps('network').virtualNetwork.subnets.subnet1.name]",
+            "accessProxyLbPort": "[int(steps('network').loadBalancer.accessProxyLbPort)]",
+            "accessProxyLbTimeout": "[int(steps('network').loadBalancer.accessProxyLbTimeout)]",
+            "virtualMachineScaleSetInstanceSize": "[steps('instances').vmSettings.virtualMachineScaleSetInstanceSize]",
+            "virtualMachineScaleSetAuthUserName": "[steps('instances').authSettings.virtualMachineScaleSetAuthUserName]",
+            "virtualMachineScaleSetAuthPublicKey": "[steps('instances').authSettings.virtualMachineScaleSetAuthPublicKey]",
+            "templateTagsByResource": "[steps('tags').tagsByResource]"
+        }
+    }
+}

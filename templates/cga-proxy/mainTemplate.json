@@ -21,7 +21,7 @@
             "defaultValue": 15,
             "type": "int",
             "minValue": 1,
-            "maxValue": 3600,
+            "maxValue": 60,
             "metadata": {
                 "description": "Timeout in minutes for the Access Proxy load balancer connections (defaults to '15')."
             }
@@ -65,18 +65,18 @@
                 "description": "Public Key to use for the Access Proxy Instances login (defaults to a placeholder when the value is not provided)."
             }
         },
+        "tagsByResource": {
+            "type": "object",
+            "defaultValue": {},
+            "metadata": {
+                "description": "Specify custom tags to be included with default tags."
+            }
+        },
         "templateLocation": {
             "defaultValue": "[resourceGroup().location]",
             "type": "string",
             "metadata": {
                 "description": "Location to deploy resources (defaults to Resource Group location)."
-            }
-        },
-        "templateCustomTags": {
-            "type": "object",
-            "defaultValue": {},
-            "metadata": {
-                "description": "Specify custom tags to be merged with defaults (example: {\"Owner\":\"Contoso\",\"Cost Center\":\"2345-324\"})."
             }
         }
     },
@@ -87,7 +87,6 @@
             "KeyVault": "[variables('keyVaultName')]"
         },
         "customData": "IyEvYmluL2Jhc2gKCnNldCAtZXVvIHBpcGVmYWlsCgplY2hvICJSYXRlTGltaXRCdXJzdD0xMDAwMCIgPj4gL2V0Yy9zeXN0ZW1kL2pvdXJuYWxkLmNvbmYKc3lzdGVtY3RsIHJlc3RhcnQgc3lzdGVtZC1qb3VybmFsZC5zZXJ2aWNlCgp5dW0gLXkgaW5zdGFsbCBjdXJsIGpxCgpBWlVSRV9UT0tFTj0iJChjdXJsIC1IIE1ldGFkYXRhOnRydWUgXAogICAgImh0dHA6Ly8xNjkuMjU0LjE2OS4yNTQvbWV0YWRhdGEvaWRlbnRpdHkvb2F1dGgyL3Rva2VuP2FwaS12ZXJzaW9uPTIwMTgtMDItMDEmcmVzb3VyY2U9aHR0cHMlM0ElMkYlMkZ2YXVsdC5henVyZS5uZXQiIHwgXAogICAganEgLXIgLmFjY2Vzc190b2tlbikiCgpJRlM9IjsiIHJlYWQgLXIgLWEgVEFHUyA8PDwgIiQoY3VybCAtSCBNZXRhZGF0YTp0cnVlIFwKICAgICJodHRwOi8vMTY5LjI1NC4xNjkuMjU0L21ldGFkYXRhL2luc3RhbmNlL2NvbXB1dGU/YXBpLXZlcnNpb249MjAxOC0xMC0wMSIgfCBcCiAgICBqcSAtciAudGFncykiCgpmb3IgVEFHIGluICIke1RBR1NbQF19IjsgZG8KICAgIGlmIFtbICIke1RBR30iID1+IF5LZXlWYXVsdCBdXTsgdGhlbgogICAgICAgIEtFWV9WQVVMVF9OQU1FPSIke1RBRyMqOn0iCiAgICBmaQpkb25lCgpDR0FfVE9LRU49IiQoY3VybCAtSCAiQXV0aG9yaXphdGlvbjogQmVhcmVyICR7QVpVUkVfVE9LRU59IiBcCiAgICAiaHR0cHM6Ly8ke0tFWV9WQVVMVF9OQU1FfS52YXVsdC5henVyZS5uZXQvc2VjcmV0cy9jZ2EtcHJveHktdG9rZW4/YXBpLXZlcnNpb249MjAxNi0xMC0wMSIgfCBcCiAgICBqcSAtciAudmFsdWUpIgoKY3VybCAtc0wgImh0dHBzOi8vdXJsLmZ5ZGUubWUvaW5zdGFsbC1meWRlLXByb3h5LWxpbnV4IiB8IGJhc2ggLXMgLS0gLXUgLXAgIjQ0MyIgLXogXAogICAgLXQgIiR7Q0dBX1RPS0VOfSIK",
-        "finalTags": "[union(parameters('templateCustomTags'),variables('defaultTags'))]",
         "keyVaultName": "[substring(concat(variables('namePrefix'), 'vault', variables('nameSuffix')), 0, 24)]",
         "loadBalancerBackendName": "[concat(variables('namePrefix'), 'lb-backend', variables('nameSuffix'))]",
         "loadBalancerFrontendName": "[concat(variables('namePrefix'), 'lb-frontend', variables('nameSuffix'))]",
@@ -106,11 +105,24 @@
     },
     "resources": [
         {
+            "apiVersion": "2020-06-01",
+            "name": "pid-1c4afaba-8643-4a1e-8628-d2b9a3591c94",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": []
+                }
+            }
+        },
+        {
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2016-10-01",
             "name": "[variables('keyVaultName')]",
             "location": "[parameters('templateLocation')]",
-            "tags": "[variables('finalTags')]",
+            "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.KeyVault/vaults'), parameters('tagsByResource')['Microsoft.KeyVault/vaults'], json('{}')))]",
             "properties": {
                 "sku": {
                     "family": "A",
@@ -179,7 +191,7 @@
             "apiVersion": "2020-05-01",
             "name": "[variables('loadBalancerName')]",
             "location": "[parameters('templateLocation')]",
-            "tags": "[variables('finalTags')]",
+            "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Network/loadBalancers'), parameters('tagsByResource')['Microsoft.Network/loadBalancers'], json('{}')))]",
             "sku": {
                 "name": "Standard"
             },
@@ -243,7 +255,7 @@
             "apiVersion": "2020-05-01",
             "name": "[variables('publicIPAddressName')]",
             "location": "[parameters('templateLocation')]",
-            "tags": "[variables('finalTags')]",
+            "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Network/publicIPAddresses'), parameters('tagsByResource')['Microsoft.Network/publicIPAddresses'], json('{}')))]",
             "sku": {
                 "name": "Standard"
             },
@@ -258,7 +270,7 @@
             "apiVersion": "2019-07-01",
             "name": "[variables('virtualMachineScaleSetName')]",
             "location": "[parameters('templateLocation')]",
-            "tags": "[variables('finalTags')]",
+            "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachineScaleSets'), parameters('tagsByResource')['Microsoft.Compute/virtualMachineScaleSets'], json('{}')))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ],
@@ -370,7 +382,7 @@
             "apiVersion": "2020-05-01",
             "name": "[variables('networkSecurityGroupName')]",
             "location": "[parameters('templateLocation')]",
-            "tags": "[variables('finalTags')]",
+            "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkSecurityGroups'), parameters('tagsByResource')['Microsoft.Network/networkSecurityGroups'], json('{}')))]",
             "properties": {
                 "securityRules": [
                     {
@@ -394,7 +406,7 @@
             "apiVersion": "2019-06-01",
             "name": "[variables('storageAccountName')]",
             "location": "[parameters('templateLocation')]",
-            "tags": "[variables('finalTags')]",
+            "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Storage/storageAccounts'), parameters('tagsByResource')['Microsoft.Storage/storageAccounts'], json('{}')))]",
             "properties": {
                 "accessTier": "Hot",
                 "minimumTlsVersion": "TLS1_2",
