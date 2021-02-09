@@ -47,6 +47,14 @@ The template includes:
 
 1. Update variable `customData` value and commit result
 
+### Marketplace
+
+1. Generate zip on `tmp` folder
+
+  ```sh
+  ./helpers/create-marketplace-zip.sh ./templates/cga-proxy
+  ```
+
 ## Linter
 
 ```sh

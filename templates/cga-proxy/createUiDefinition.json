@@ -226,7 +226,7 @@
             "virtualMachineScaleSetInstanceSize": "[steps('instances').vmSettings.virtualMachineScaleSetInstanceSize]",
             "virtualMachineScaleSetAuthUserName": "[steps('instances').authSettings.virtualMachineScaleSetAuthUserName]",
             "virtualMachineScaleSetAuthPublicKey": "[steps('instances').authSettings.virtualMachineScaleSetAuthPublicKey]",
-            "templateTagsByResource": "[steps('tags').tagsByResource]"
+            "tagsByResource": "[steps('tags').tagsByResource]"
         }
     }
 }
