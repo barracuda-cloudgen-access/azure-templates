@@ -64,7 +64,7 @@
                             "addressPrefixSize": "/16"
                         },
                         "constraints": {
-                            "minAddressPrefixSize": "/16"
+                            "minAddressPrefixSize": "/24"
                         },
                         "subnets": {
                             "subnet1": {
@@ -208,6 +208,7 @@
                             "Microsoft.KeyVault/vaults",
                             "Microsoft.Network/loadBalancers",
                             "Microsoft.Network/publicIPAddresses",
+                            "Microsoft.Network/virtualNetworks",
                             "Microsoft.Compute/virtualMachineScaleSets",
                             "Microsoft.Network/networkSecurityGroups",
                             "Microsoft.Storage/storageAccounts"
@@ -219,8 +220,12 @@
         ],
         "outputs": {
             "accessProxyToken": "[steps('cgaProxy').accessProxyToken]",
-            "virtualMachineScaleSetVnetName": "[steps('network').virtualNetwork.name]",
-            "virtualMachineScaleSetSubnetName": "[steps('network').virtualNetwork.subnets.subnet1.name]",
+            "virtualNetworkName": "[steps('network').virtualNetwork.name]",
+            "virtualNetworkNewOrExisting": "[steps('network').virtualNetwork.newOrExisting]",
+            "virtualNetworkAddressPrefix": "[first(steps('network').virtualNetwork.addressPrefixes)]",
+            "virtualNetworkResourceGroup": "[steps('network').virtualNetwork.resourceGroup]",
+            "subnetName": "[steps('network').virtualNetwork.subnets.subnet1.name]",
+            "subnetAddressPrefix": "[steps('network').virtualNetwork.subnets.subnet1.addressPrefix]",
             "accessProxyLbPort": "[int(steps('network').loadBalancer.accessProxyLbPort)]",
             "accessProxyLbTimeout": "[int(steps('network').loadBalancer.accessProxyLbTimeout)]",
             "virtualMachineScaleSetInstanceSize": "[steps('instances').vmSettings.virtualMachineScaleSetInstanceSize]",
