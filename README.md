@@ -21,7 +21,7 @@ The template includes:
 
 - Azure Portal
 
-  [![Deploy To Azure](./images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fbarracuda-cloudgen-access%2Fazure-templates%2Fmain%2Ftemplates%2Fcga-proxy-template.json)
+  [![Deploy To Azure](./images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fbarracuda-cloudgen-access%2Fazure-templates%2Fmain%2Ftemplates%2Fcga-proxy%2FmainTemplate.json)
 
 - Azure Cli
 
@@ -29,7 +29,7 @@ The template includes:
   az deployment group create \
     --name cga-proxy \
     --resource-group cga-proxy \
-    --template-file ./templates/cga-proxy-template.json \
+    --template-file ./templates/cga-proxy/mainTemplate.json \
     -p virtualMachineScaleSetAuthPublicKey="$(cat ~/.ssh/cga-proxy-key.pub)" \
     -p virtualMachineScaleSetVnetName=cga-proxy-vnet \
     -p templateCustomTags='{"Owner":"Contoso","Cost Center":"2345-324"}'
@@ -47,11 +47,24 @@ The template includes:
 
 1. Update variable `customData` value and commit result
 
+### Marketplace
+
+1. Generate zip on `tmp` folder
+
+  ```sh
+  ./helpers/create-marketplace-zip.sh ./templates/cga-proxy
+  ```
+
 ## Linter
 
 ```sh
 make lint
 ```
+
+## Azure Links
+
+- [Create UI Definition Sandbox](https://portal.azure.com/?feature.customPortal=false#blade/Microsoft_Azure_CreateUIDef/SandboxBlade)
+- [Custom deployment](https://portal.azure.com/?feature.customPortal=false#create/Microsoft.Template)
 
 ## DISCLAIMER
 
