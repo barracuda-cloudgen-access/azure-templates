@@ -15,15 +15,11 @@ The template includes:
 
 ### Deploy
 
-- Requirements
-  - Resource Group
-  - Vnet + Subnet in the above Resource Group
-
 - Azure Portal
 
-  [![Deploy To Azure](./images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fbarracuda-cloudgen-access%2Fazure-templates%2Fmain%2Ftemplates%2Fcga-proxy%2FmainTemplate.json)
+  [![Deploy To Azure](./images/deploytoazure.svg?sanitize=true)](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/barracudanetworks.barracuda-cga-proxy?tab=Overview)
 
-- Azure Cli
+- Azure Cli (testing purposes only)
 
   ```sh
   az deployment group create \
