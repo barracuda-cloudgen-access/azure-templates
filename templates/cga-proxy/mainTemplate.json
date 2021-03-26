@@ -151,19 +151,6 @@
     },
     "resources": [
         {
-            "apiVersion": "2020-06-01",
-            "name": "pid-1c4afaba-8643-4a1e-8628-d2b9a3591c94",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "template": {
-                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-                    "contentVersion": "1.0.0.0",
-                    "resources": []
-                }
-            }
-        },
-        {
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2016-10-01",
             "name": "[variables('keyVaultName')]",
