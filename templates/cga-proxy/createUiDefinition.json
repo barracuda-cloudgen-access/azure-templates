@@ -14,14 +14,12 @@
                 "elements": [
                     {
                         "name": "accessProxyTokenInfo",
-                        "type": "Microsoft.Common.TextBlock",
+                        "type": "Microsoft.Common.InfoBox",
                         "visible": true,
                         "options": {
-                            "text": "The Access Proxy Token is obtained by creating a new CloudGen Access Proxy.",
-                            "link": {
-                                "label": "Learn more",
-                                "uri": "https://campus.barracuda.com/product/cloudgenaccess/doc/93201527/add-cloudgen-access-proxy"
-                            }
+                            "icon": "Info",
+                            "text": "The Access Proxy Token is obtained by creating a new CloudGen Access Proxy. Click to learn more.",
+                            "uri": "https://campus.barracuda.com/product/cloudgenaccess/doc/93201527/add-cloudgen-access-proxy"
                         }
                     },
                     {
@@ -127,28 +125,68 @@
                         "label": "Virtual Machines Settings",
                         "elements": [
                             {
-                                "name": "virtualMachineScaleSetInstanceSize",
-                                "type": "Microsoft.Common.DropDown",
-                                "label": "Instance Size",
-                                "defaultValue": "Standard_B1s",
-                                "toolTip": "Instance size for the Access Proxy virtual machines.",
+                                "name": "virtualMachineScaleSetInstanceCount",
+                                "type": "Microsoft.Common.Slider",
+                                "label": "Instance Number",
+                                "toolTip": "Number of virtual machines to create.",
+                                "min": 1,
+                                "max": 9,
+                                "subLabel": "Total",
+                                "defaultValue": 2,
+                                "showStepMarkers": false,
                                 "constraints": {
-                                    "required": false,
-                                    "allowedValues": [
-                                        {
-                                            "label": "Standard_B1s",
-                                            "value": "Standard_B1s"
-                                        },
-                                        {
-                                            "label": "Standard_B1ms",
-                                            "value": "Standard_B1ms"
-                                        },
-                                        {
-                                            "label": "Standard_B2s",
-                                            "value": "Standard_B2s"
-                                        }
-                                    ]
+                                    "required": true
                                 },
+                                "visible": true
+                            },
+                            {
+                                "name": "redisWarning",
+                                "type": "Microsoft.Common.InfoBox",
+                                "options": {
+                                    "icon": "Info",
+                                    "text": "Azure Cache for Redis is deployed when more than one instances are selected.\nThe configuration might take up to 30 minutes.\nClick to learn more.",
+                                    "uri": "https://campus.barracuda.com/product/cloudgenaccess/doc/93201613/access-proxy-high-availability/"
+                                },
+                                "visible": "[if(greater(steps('instances').vmSettings.virtualMachineScaleSetInstanceCount, 1), true, false)]"
+                            },
+                            {
+                                "name": "virtualMachineScaleSetAvailabilityZones",
+                                "type": "Microsoft.Common.DropDown",
+                                "label": "Availability Zones",
+                                "toolTip": "Availability Zones to use for deployed instances (Cannot be changed after deploy).",
+                                "multiselect": true,
+                                "selectAll": true,
+                                "defaultValue": "[]",
+                                "constraints": {
+                                    "allowedValues": "[map(coalesce(first(filter(parse('[{\"location\":\"eastus2-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"centralus-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"westeurope-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"eastus2euap-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"centraluseuap-\",\"zones\":[\"2\",\"1\"]},{\"location\":\"francecentral-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"southeastasia-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"westus2-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"northeurope-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"eastus-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"uksouth-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"japaneast-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"australiaeast-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"southcentralus-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"canadacentral-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"germanywestcentral-\",\"zones\":[\"1\",\"3\",\"2\"]},{\"location\":\"brazilsouth-\",\"zones\":[\"1\",\"3\",\"2\"]}]'), (item) => contains(item.location, concat(location(), '-')))), parse('{\"zones\":[]}')).zones, (zone) => parse(concat('{\"label\":\"', zone, '\",\"value\":\"', zone, '\"}')))]"
+                                },
+                                "visible": "[if(greater(steps('instances').vmSettings.virtualMachineScaleSetInstanceCount, 1), true, false)]"
+                            },
+                            {
+                                "name": "virtualMachineScaleSetInstanceSize",
+                                "type": "Microsoft.Compute.SizeSelector",
+                                "label": "Instance Size",
+                                "toolTip": "Instance size for the Access Proxy virtual machines.",
+                                "recommendedSizes": [
+                                    "Standard_B1s",
+                                    "Standard_B1ms",
+                                    "Standard_B2s"
+                                ],
+                                "constraints": {
+                                    "allowedSizes": [],
+                                    "excludedSizes": [],
+                                    "numAvailabilityZonesRequired": "[length(steps('instances').vmSettings.virtualMachineScaleSetAvailabilityZones)]"
+                                },
+                                "options": {
+                                    "hideDiskTypeFilter": true
+                                },
+                                "osPlatform": "Linux",
+                                "imageReference": {
+                                    "publisher": "OpenLogic",
+                                    "offer": "CentOS",
+                                    "sku": "8_2"
+                                },
+                                "count": "[steps('instances').vmSettings.virtualMachineScaleSetInstanceCount]",
                                 "visible": true
                             }
                         ],
@@ -228,6 +266,8 @@
             "subnetAddressPrefix": "[steps('network').virtualNetwork.subnets.subnet1.addressPrefix]",
             "accessProxyLbPort": "[int(steps('network').loadBalancer.accessProxyLbPort)]",
             "accessProxyLbTimeout": "[int(steps('network').loadBalancer.accessProxyLbTimeout)]",
+            "virtualMachineScaleSetInstanceCount": "[steps('instances').vmSettings.virtualMachineScaleSetInstanceCount]",
+            "virtualMachineScaleSetAvailabilityZones": "[steps('instances').vmSettings.virtualMachineScaleSetAvailabilityZones]",
             "virtualMachineScaleSetInstanceSize": "[steps('instances').vmSettings.virtualMachineScaleSetInstanceSize]",
             "virtualMachineScaleSetAuthUserName": "[steps('instances').authSettings.virtualMachineScaleSetAuthUserName]",
             "virtualMachineScaleSetAuthPublicKey": "[steps('instances').authSettings.virtualMachineScaleSetAuthPublicKey]",

@@ -19,48 +19,35 @@ The template includes:
 
   [![Deploy To Azure](./images/deploytoazure.svg?sanitize=true)](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/barracudanetworks.barracuda-cga-proxy?tab=Overview)
 
-- Azure Cli (testing purposes only)
+- Azure Cli (testing purposes)
 
   ```sh
   az deployment group create \
     --name cga-proxy \
     --resource-group cga-proxy \
     --template-file ./templates/cga-proxy/mainTemplate.json \
-    -p virtualMachineScaleSetAuthPublicKey="$(cat ~/.ssh/cga-proxy-key.pub)" \
-    -p virtualMachineScaleSetVnetName=cga-proxy-vnet \
-    -p templateCustomTags='{"Owner":"Contoso","Cost Center":"2345-324"}'
+    -p accessProxyToken="${ACCESSPROXYTOKEN:?}" \
+    -p virtualNetworkName=cga-proxy-vnet \
+    -p virtualNetworkNewOrExisting=existing \
+    -p virtualNetworkAddressPrefix=10.1.0.0/16 \
+    -p virtualNetworkResourceGroup=cga-proxy \
+    -p subnetName=default \
+    -p subnetAddressPrefix=10.1.0.0/24 \
+    -p templateLocation=eastus2euap \
+    - virtualMachineScaleSetInstanceCount=2 \
+    -p virtualMachineScaleSetAvailabilityZones=['1','2', '3'] \
+    -p virtualMachineScaleSetAuthPublicKey="$(cat ~/.ssh/cga-proxy-key.pub)"
   ```
 
-### Update custom data
+### Actions
 
-- Required on change only
-
-1. Generate base64
-
-  ```sh
-  ./helpers/create-custom-data-base64.sh ./helpers/cga-proxy-custom-data.sh
-  ```
-
-1. Update variable `customData` value and commit result
-
-### Marketplace
-
-1. Generate zip on `tmp` folder
-
-  ```sh
-  ./helpers/create-marketplace-zip.sh ./templates/cga-proxy
-  ```
-
-## Linter
-
-```sh
-make lint
-```
+- Check [Makefile](./Makefile)
 
 ## Azure Links
 
 - [Create UI Definition Sandbox](https://portal.azure.com/?feature.customPortal=false#blade/Microsoft_Azure_CreateUIDef/SandboxBlade)
 - [Custom deployment](https://portal.azure.com/?feature.customPortal=false#create/Microsoft.Template)
+- [API Explorer](https://docs.microsoft.com/en-us/rest/api/resources/providers/get)
 
 ## DISCLAIMER
 
