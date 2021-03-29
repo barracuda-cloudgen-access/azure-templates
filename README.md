@@ -10,7 +10,7 @@ The template includes:
 - Load Balancer with Public IP
 - Virtual Machine Scale Set stateless instances for the proxy services
   - Unhealthy instances will be automatically replaced
-  - Currently limited to one instance, support for more will be added soon
+- Azure Cache for Redis, when more than one instances are selected
 - Storage Account to store logs from instances, files are automatically removed after 7 days
 
 ### Deploy
