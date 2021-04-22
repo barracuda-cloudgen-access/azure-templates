@@ -1,7 +1,7 @@
 ### Make config
 
 .ONESHELL:
-SHELL = /bin/bash
+SHELL = bash
 .SHELLFLAGS = -eu -c
 .PHONY: cga-proxy-custom-data cga-proxy-marketplace create-az-map git-clean lint
 
