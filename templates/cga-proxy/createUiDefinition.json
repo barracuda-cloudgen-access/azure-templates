@@ -267,7 +267,7 @@
             "accessProxyLbPort": "[int(steps('network').loadBalancer.accessProxyLbPort)]",
             "accessProxyLbTimeout": "[int(steps('network').loadBalancer.accessProxyLbTimeout)]",
             "virtualMachineScaleSetInstanceCount": "[steps('instances').vmSettings.virtualMachineScaleSetInstanceCount]",
-            "virtualMachineScaleSetAvailabilityZones": "[steps('instances').vmSettings.virtualMachineScaleSetAvailabilityZones]",
+            "virtualMachineScaleSetAvailabilityZones": "[if(empty(steps('instances').vmSettings.virtualMachineScaleSetAvailabilityZones), map(parse('[]'), (item) => item.name), steps('instances').vmSettings.virtualMachineScaleSetAvailabilityZones)]",
             "virtualMachineScaleSetInstanceSize": "[steps('instances').vmSettings.virtualMachineScaleSetInstanceSize]",
             "virtualMachineScaleSetAuthUserName": "[steps('instances').authSettings.virtualMachineScaleSetAuthUserName]",
             "virtualMachineScaleSetAuthPublicKey": "[steps('instances').authSettings.virtualMachineScaleSetAuthPublicKey]",
