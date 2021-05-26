@@ -1,6 +1,12 @@
-# Azure Templates
+# Barracuda CloudGen Access - Azure Templates
 
-Azure Resource Manager (ARM) templates for CloudGen resources
+![Barracuda CloudGen Access](./misc/cga-logo.png)
+
+Azure Resource Manager (ARM) templates for CloudGen Access resources
+
+Visit the [Website](https://www.barracuda.com/products/cloudgen-access)
+
+Check the [Product Documentation](https://campus.barracuda.com/product/cloudgenaccess/doc/93201218/overview/)
 
 ## Barracuda CloudGen Access Proxy
 
@@ -17,7 +23,7 @@ The template includes:
 
 - Azure Portal
 
-  [![Deploy To Azure](./images/deploytoazure.svg?sanitize=true)](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/barracudanetworks.barracuda-cga-proxy?tab=Overview)
+  [![Deploy To Azure](./misc/deploytoazure.svg?sanitize=true)](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/barracudanetworks.barracuda-cga-proxy?tab=Overview)
 
 - Azure Cli (testing purposes)
 
@@ -43,13 +49,22 @@ The template includes:
 
 - Check [Makefile](./Makefile)
 
-## Azure Links
+## Links
 
+- More deploy options:
+  - [AWS Templates](https://github.com/barracuda-cloudgen-access/aws-templates)
+  - [Helm Charts](https://github.com/barracuda-cloudgen-access/helm-charts)
+  - [Terraform Modules](https://github.com/barracuda-cloudgen-access/terraform-modules)
+- Azure Development:
 - [Create UI Definition Sandbox](https://portal.azure.com/?feature.customPortal=false#blade/Microsoft_Azure_CreateUIDef/SandboxBlade)
 - [Custom deployment](https://portal.azure.com/?feature.customPortal=false#create/Microsoft.Template)
 - [API Explorer](https://docs.microsoft.com/en-us/rest/api/resources/providers/get)
 
-## DISCLAIMER
+## License
+
+Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0), a OSI-approved license.
+
+## Disclaimer
 
 All of the source code on this repository is provided "as is", without warranty of any kind,
 express or implied, including but not limited to the warranties of merchantability,
