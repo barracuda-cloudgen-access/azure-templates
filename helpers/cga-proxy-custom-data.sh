@@ -26,10 +26,6 @@ function get_secret() {
         jq -r .value
 }
 
-log_entry "INFO" "Misc configs"
-echo "RateLimitBurst=10000" >> /etc/systemd/journald.conf
-systemctl restart systemd-journald.service
-
 log_entry "INFO" "Install support tools"
 yum -y install curl jq openssl
 
