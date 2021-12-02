@@ -33,7 +33,7 @@
                         "constraints": {
                             "required": true,
                             "regex": "^http[s]?://[^/]+/proxies/v[0-9]+/enrollment/[0-9a-f-]+\\?proxy_auth_token=[^\\&]+\\&tenant_id=[0-9a-f-]+$",
-                            "validationMessage": "Access Proxy enrollment token is invalid, please try again."
+                            "validationMessage": "Needs to match an Access Proxy enrollment schema."
                         },
                         "options": {
                             "hideConfirmation": true
