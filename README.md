@@ -4,7 +4,7 @@
 
 Azure Resource Manager (ARM) templates for CloudGen Access resources
 
-Visit the [Website](https://www.barracuda.com/products/cloudgen-access)
+Visit the [Site](https://www.barracuda.com/products/cloudgen-access)
 
 Check the [Product Documentation](https://campus.barracuda.com/product/cloudgenaccess/doc/93201218/overview/)
 
