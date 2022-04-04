@@ -47,6 +47,16 @@
                 "label": "Network",
                 "elements": [
                     {
+                        "name": "virtualNetworkInfo",
+                        "type": "Microsoft.Common.InfoBox",
+                        "visible": true,
+                        "options": {
+                            "icon": "Info",
+                            "text": "A subnet with at least 8 usable hosts is required. The minimum value for subnet mask is /28.\nThe available IPs will limit the number of VMs allowed to be deployed.",
+                            "uri": "https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-networking"
+                        }
+                    },
+                    {
                         "name": "virtualNetwork",
                         "type": "Microsoft.Network.VirtualNetworkCombo",
                         "label": {
@@ -55,7 +65,7 @@
                         },
                         "toolTip": {
                             "virtualNetwork": "Name of the virtual network",
-                            "subnets": "Subnets for the virtual network"
+                            "subnets": "Subnet for the virtual network"
                         },
                         "defaultValue": {
                             "name": "VirtualNetwork",
@@ -72,8 +82,8 @@
                                     "addressPrefixSize": "/24"
                                 },
                                 "constraints": {
-                                    "minAddressPrefixSize": "/24",
-                                    "minAddressCount": 12,
+                                    "minAddressPrefixSize": "/28",
+                                    "minAddressCount": 8,
                                     "requireContiguousAddresses": false
                                 }
                             }
