@@ -34,7 +34,8 @@ jobs:
       !(contains(github.event.*.labels.*.name, 'feature') ||
       contains(github.event.*.labels.*.name, 'fix') ||
       contains(github.event.*.labels.*.name, 'chore') ||
-      contains(github.event.*.labels.*.name, 'docs'))
+      contains(github.event.*.labels.*.name, 'docs') ||
+      contains(github.event.*.labels.*.name, 'dependencies'))
     name: Require Category
     runs-on: ubuntu-latest
     steps:
