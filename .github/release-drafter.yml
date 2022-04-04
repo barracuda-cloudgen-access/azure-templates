@@ -12,7 +12,9 @@ categories:
       - "bugfix"
       - "bug"
   - title: "🧰 Maintenance"
-    label: "chore"
+    label:
+      - "chore"
+      - "dependencies"
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 change-title-escapes: '\<*_&'
 version-resolver:
