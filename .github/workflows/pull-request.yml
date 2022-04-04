@@ -19,5 +19,4 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Custom Data updated test
-        run: |
-          make cga-proxy-custom-data git-clean
+        run: make cga-proxy-custom-data git-clean
