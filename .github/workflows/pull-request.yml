@@ -9,9 +9,8 @@ defaults:
     shell: bash
 
 jobs:
-
-  cga-proxy-test:
-    name: CGA Proxy Test
+  test-scripts:
+    name: Test scripts
     runs-on: ubuntu-latest
     steps:
 
