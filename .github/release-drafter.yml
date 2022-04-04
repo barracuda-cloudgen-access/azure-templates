@@ -12,7 +12,7 @@ categories:
       - "bugfix"
       - "bug"
   - title: "🧰 Maintenance"
-    label:
+    labels:
       - "chore"
       - "dependencies"
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
