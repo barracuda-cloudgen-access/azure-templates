@@ -32,7 +32,7 @@
                         "toolTip": "Registration token for the Access Proxy.",
                         "constraints": {
                             "required": true,
-                            "regex": "^http[s]?://[^/]+/proxies/v[0-9]+/enrollment/[0-9a-f-]+\\?proxy_auth_token=[^\\&]+\\&tenant_id=[0-9a-f-]+$",
+                            "regex": "^https:\\/\\/[a-zA-Z0-9.-]+\\.(fyde\\.com|access\\.barracuda\\.com)\\/proxies/v[0-9]+\\/enrollment\\/[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}\\?proxy_auth_token=[0-9a-zA-Z]+&tenant_id=[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
                             "validationMessage": "Needs to match an Access Proxy enrollment schema."
                         },
                         "options": {
