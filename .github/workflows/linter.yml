@@ -19,7 +19,8 @@ jobs:
           fetch-depth: 0
 
       - name: Lint Code
-        uses: docker://github/super-linter:slim-v4
+        # we need the fat image that include arm-ttk
+        uses: docker://github/super-linter:v4
         env:
           VALIDATE_ALL_CODEBASE: true
           DEFAULT_BRANCH: main

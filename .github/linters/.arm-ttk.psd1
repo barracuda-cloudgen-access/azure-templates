@@ -26,8 +26,6 @@
     )
     Skip = @(
         # We are not hardcoding, there is a parameter to set the location value
-        'Location Should Not Be Hardcoded',
-        # Follow up https://github.com/Azure/azure-resource-manager-schemas/issues/1252
-        'apiVersions Should Be Recent'
+        'Location Should Not Be Hardcoded'
     )
 }
