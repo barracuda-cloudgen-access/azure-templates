@@ -24,19 +24,14 @@
                     },
                     {
                         "name": "accessProxyToken",
-                        "type": "Microsoft.Common.PasswordBox",
-                        "label": {
-                            "password": "Access Proxy Token",
-                            "confirmPassword": "Confirm password"
-                        },
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Access Proxy Token",
+                        "defaultValue": "",
                         "toolTip": "Registration token for the Access Proxy.",
                         "constraints": {
                             "required": true,
                             "regex": "^https:\\/\\/[a-zA-Z0-9.-]+\\.(fyde\\.com|access\\.barracuda\\.com)\\/proxies/v[0-9]+\\/enrollment\\/[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}\\?proxy_auth_token=[0-9a-zA-Z]+&tenant_id=[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$",
                             "validationMessage": "Needs to match an Access Proxy enrollment schema."
-                        },
-                        "options": {
-                            "hideConfirmation": true
                         },
                         "visible": true
                     }
@@ -214,7 +209,9 @@
                                 "defaultValue": "azureuser",
                                 "toolTip": "Admin username to use for the Access Proxy Instances login.",
                                 "constraints": {
-                                    "required": false
+                                    "required": false,
+                                    "regex": "^[a-z0-9A-Z-_.]{3,50}$",
+                                    "validationMessage": "The Admin username must be between 3 and 50 characters long and contain only letters, numbers, hyphens, dashes and dots."
                                 },
                                 "visible": true
                             },
@@ -224,7 +221,9 @@
                                 "label": "SSH Public Key",
                                 "toolTip": "Public Key to use for the Access Proxy Instances.",
                                 "constraints": {
-                                    "required": false
+                                    "required": false,
+                                    "regex": "^(ssh-dss AAAAB3NzaC1kc3|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb2|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29t|ssh-rsa AAAAB3NzaC1yc2)[0-9A-Za-z+/]+[=]{0,3}(\\s.*)?$",
+                                    "validationMessage": "Needs to match a valid SSH Public Key"
                                 },
                                 "visible": true
                             },
@@ -252,6 +251,7 @@
                     {
                         "name": "tagsByResource",
                         "type": "Microsoft.Common.TagsByResource",
+                        "toolTip": "Tags appended to created resources.",
                         "resources": [
                             "Microsoft.KeyVault/vaults",
                             "Microsoft.Network/loadBalancers",
@@ -267,6 +267,7 @@
             }
         ],
         "outputs": {
+            "location": "[location()]",
             "accessProxyToken": "[steps('cgaProxy').accessProxyToken]",
             "virtualNetworkName": "[steps('network').virtualNetwork.name]",
             "virtualNetworkNewOrExisting": "[steps('network').virtualNetwork.newOrExisting]",
