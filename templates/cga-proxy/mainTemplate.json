@@ -109,7 +109,7 @@
                 "description": "Specify custom tags to be included with default tags."
             }
         },
-        "templateLocation": {
+        "location": {
             "defaultValue": "[resourceGroup().location]",
             "type": "string",
             "metadata": {
@@ -154,7 +154,7 @@
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2021-10-01",
             "name": "[variables('keyVaultName')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.KeyVault/vaults'), parameters('tagsByResource')['Microsoft.KeyVault/vaults'], json('{}')))]",
             "properties": {
                 "sku": {
@@ -173,7 +173,7 @@
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2021-10-01",
             "name": "[concat(variables('keyVaultName'), '/cga-proxy-token')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
             ],
@@ -212,7 +212,7 @@
             "type": "Microsoft.Network/loadBalancers",
             "apiVersion": "2020-11-01",
             "name": "[variables('loadBalancerName')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Network/loadBalancers'), parameters('tagsByResource')['Microsoft.Network/loadBalancers'], json('{}')))]",
             "sku": {
                 "name": "Standard"
@@ -276,7 +276,7 @@
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2020-11-01",
             "name": "[variables('publicIPAddressName')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Network/publicIPAddresses'), parameters('tagsByResource')['Microsoft.Network/publicIPAddresses'], json('{}')))]",
             "sku": {
                 "name": "Standard"
@@ -292,7 +292,7 @@
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2020-11-01",
             "name": "[parameters('virtualNetworkName')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Network/virtualNetworks'), parameters('tagsByResource')['Microsoft.Network/virtualNetworks'], json('{}')))]",
             "properties": {
                 "addressSpace": {
@@ -314,7 +314,7 @@
             "type": "Microsoft.Compute/virtualMachineScaleSets",
             "apiVersion": "2021-11-01",
             "name": "[variables('virtualMachineScaleSetName')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "tags": "[union(variables('defaultTags'), variables('instanceTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachineScaleSets'), parameters('tagsByResource')['Microsoft.Compute/virtualMachineScaleSets'], json('{}')))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
@@ -429,7 +429,7 @@
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2020-11-01",
             "name": "[variables('networkSecurityGroupName')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkSecurityGroups'), parameters('tagsByResource')['Microsoft.Network/networkSecurityGroups'], json('{}')))]",
             "properties": {
                 "securityRules": [
@@ -453,7 +453,7 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2021-09-01",
             "name": "[variables('storageAccountName')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Storage/storageAccounts'), parameters('tagsByResource')['Microsoft.Storage/storageAccounts'], json('{}')))]",
             "properties": {
                 "accessTier": "Hot",
@@ -508,7 +508,7 @@
             "type": "Microsoft.Cache/Redis",
             "apiVersion": "2021-06-01",
             "name": "[variables('redisCacheName')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "tags": "[union(variables('defaultTags'), if(contains(parameters('tagsByResource'), 'Microsoft.Cache/Redis'), parameters('tagsByResource')['Microsoft.Cache/Redis'], json('{}')))]",
             "properties": {
                 "enableNonSslPort": false,
@@ -538,7 +538,7 @@
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2021-10-01",
             "name": "[concat(variables('keyVaultName'), '/redis-host')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
                 "[resourceId('Microsoft.Cache/Redis', variables('redisCacheName'))]"
@@ -556,7 +556,7 @@
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2021-10-01",
             "name": "[concat(variables('keyVaultName'), '/redis-port')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
                 "[resourceId('Microsoft.Cache/Redis', variables('redisCacheName'))]"
@@ -574,7 +574,7 @@
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2021-10-01",
             "name": "[concat(variables('keyVaultName'), '/redis-auth')]",
-            "location": "[parameters('templateLocation')]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
                 "[resourceId('Microsoft.Cache/Redis', variables('redisCacheName'))]"
