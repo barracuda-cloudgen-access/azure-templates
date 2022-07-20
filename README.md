@@ -55,10 +55,7 @@ The template includes:
   - [AWS Templates](https://github.com/barracuda-cloudgen-access/aws-templates)
   - [Helm Charts](https://github.com/barracuda-cloudgen-access/helm-charts)
   - [Terraform Modules](https://github.com/barracuda-cloudgen-access/terraform-modules)
-- Azure Development:
-- [Create UI Definition Sandbox](https://portal.azure.com/?feature.customPortal=false#blade/Microsoft_Azure_CreateUIDef/SandboxBlade)
-- [Custom deployment](https://portal.azure.com/?feature.customPortal=false#create/Microsoft.Template)
-- [API Explorer](https://docs.microsoft.com/en-us/rest/api/resources/providers/get)
+- [Azure Development resources](./development.md)
 
 ## License
 

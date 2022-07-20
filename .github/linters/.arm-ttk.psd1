@@ -46,9 +46,6 @@
         'VMSizes Must Match Template'
         )
     Skip = @(
-        # We are not hardcoding, there is a parameter to set the location value
-        'Location Should Not Be Hardcoded',
-        'CreateUIDefinition Must Not Have Blanks',
-        'Outputs Must Be Present In Template Parameters'
+        'CreateUIDefinition Must Not Have Blanks'
     )
 }
