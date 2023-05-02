@@ -377,7 +377,7 @@
                         "imageReference": {
                             "publisher": "OpenLogic",
                             "offer": "CentOS",
-                            "sku": "8_2",
+                            "sku": "8_5",
                             "version": "latest"
                         }
                     },
