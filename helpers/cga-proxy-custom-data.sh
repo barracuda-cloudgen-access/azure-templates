@@ -27,7 +27,7 @@ function get_secret() {
 }
 
 log_entry "INFO" "Install support tools"
-yum -y install curl jq openssl
+apt-get update && apt-get -y install curl jq openssl
 
 log_entry "INFO" "Get instance token"
 AZURE_TOKEN="$(curl -s -H Metadata:true \
