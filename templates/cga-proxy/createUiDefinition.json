@@ -187,9 +187,9 @@
                                 },
                                 "osPlatform": "Linux",
                                 "imageReference": {
-                                    "publisher": "OpenLogic",
-                                    "offer": "CentOS",
-                                    "sku": "8_2"
+                                    "publisher": "Canonical",
+                                    "offer": "0001-com-ubuntu-server-jammy",
+                                    "sku": "22_04-lts"
                                 },
                                 "count": "[steps('instances').vmSettings.virtualMachineScaleSetInstanceCount]",
                                 "visible": true
